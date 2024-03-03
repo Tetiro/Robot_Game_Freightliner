@@ -9,6 +9,7 @@ namespace Robot_Game_Freightliner.Interfaces.Grids
         void SetupGrid(int width, int height, IEnumerable<BoardPiece> boardPieces = null);
         void SetupGrid(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null);
         void ClearGrid();
+        void PrintGrid();
         Dimensions GetDimensions();
         IEnumerable<BoardPiece> GetPieces();
     }

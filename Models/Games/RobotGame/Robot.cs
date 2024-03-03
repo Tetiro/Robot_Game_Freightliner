@@ -8,11 +8,6 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
     {
         private Direction _direction = Direction.Unknown;
 
-        public void ProcessInstruction(string instruction)
-        {
-            //TO ADD IN HOUR 2
-        }
-
         public Direction GetDirection()
         {
             return _direction;
@@ -21,6 +16,11 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
         public void SetDirection(Direction direction)
         {
             _direction = direction;
+        }
+
+        public override char GetPieceCharacter()
+        {
+            return 'R';
         }
     }
 }

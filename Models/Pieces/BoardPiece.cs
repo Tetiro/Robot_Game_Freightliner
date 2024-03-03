@@ -8,20 +8,20 @@ namespace Robot_Game_Freightliner.Models.Pieces
         protected Position _position;
         protected bool _piecePlacedOnGrid = false;
 
-        public void PlacePieceOnGrid(int x, int y)
+        public virtual void PlacePieceOnGrid(int x, int y)
         {
             PlacePieceOnGrid(new Position(x, y));
         }
-        public void PlacePieceOnGrid(Position position)
+        public virtual void PlacePieceOnGrid(Position position)
         {
             SetPosition(position);
-            _piecePlacedOnGrid = false;
+            _piecePlacedOnGrid = true;
         }
-        public void SetPosition(int x, int y)
+        public virtual void SetPosition(int x, int y)
         {
             SetPosition(new Position(x, y));
         }
-        public void SetPosition(Position position)
+        public virtual void SetPosition(Position position)
         {
             _position = position;
         }
@@ -32,6 +32,11 @@ namespace Robot_Game_Freightliner.Models.Pieces
         public bool CheckPieceIsPlaced()
         {
             return _piecePlacedOnGrid;
+        }
+
+        public virtual char GetPieceCharacter()
+        {
+            return ' ';
         }
     }
 }

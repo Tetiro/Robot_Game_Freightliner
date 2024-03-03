@@ -11,5 +11,6 @@ namespace Robot_Game_Freightliner.Interfaces.Pieces
         void SetPosition(Position position);
         Position GetPosition();
         bool CheckPieceIsPlaced();
+        char GetPieceCharacter();
     }
 }

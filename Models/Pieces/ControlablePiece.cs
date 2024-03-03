@@ -4,7 +4,7 @@ namespace Robot_Game_Freightliner.Models.Pieces
 {
     public class ControlablePiece : MoveablePiece, IControlablePiece
     {
-        public void ProcessInstruction(string instruction)
+        public virtual void ProcessInstruction(string instruction)
         {
             
         }

@@ -1,4 +1,5 @@
 ﻿using Robot_Game_Freightliner.Models.Utils;
+using Robot_Game_Freightliner.Utilities;
 
 namespace Robot_Game_Freightliner.Models.Games.RobotGame
 {
@@ -7,32 +8,32 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
 
         public static bool IsCommandValid(this RobotBoardGame boardGame, string[] instructionParts)
         {
-            Dictionary<RobotGameInstructions, Func<RobotBoardGame, Robot, string[], bool>> validationFunctions 
+            Dictionary<RobotGameInstructions, Func<RobotBoardGame, Robot, string[], bool>> validationFunctions
                = new Dictionary<RobotGameInstructions, Func<RobotBoardGame, Robot, string[], bool>>()
-            {
-                [RobotGameInstructions.Print] = CheckPlacePrintValid,
-                [RobotGameInstructions.Turn] = CheckTurnCommandValid,
-                [RobotGameInstructions.Move] = CheckPlaceMoveValid,
-                [RobotGameInstructions.Place] = CheckPlaceCommandValid
+               {
+                   [RobotGameInstructions.Print] = CheckPrintValid,
+                   [RobotGameInstructions.Turn] = CheckTurnCommandValid,
+                   [RobotGameInstructions.Move] = CheckPlaceMoveValid,
+                   [RobotGameInstructions.Place] = CheckPlaceCommandValid
                };
 
             try
             {
                 Robot robot = boardGame.GetRobot();
 
-                if (Enum.TryParse(instructionParts[0], out RobotGameInstructions command) && robot != null)
+                if (Enum.TryParse(instructionParts[0].ToCamelCase(), out RobotGameInstructions command) && robot != null)
                 {
                     return (validationFunctions.ContainsKey(command)) ? validationFunctions[command](boardGame, robot, instructionParts) : false;
                 }
                 else
                 {
-                    //TO ADD IN hour 3
+                    Console.WriteLine(robot != null ? "Invalid user input!" : "There is no robot on the board!");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                //TO ADD in hour 3
+                Console.WriteLine($"Unexpected error in {nameof(IsCommandValid)}: {ex.Message}");
                 return false;
             }
         }
@@ -41,55 +42,52 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
         {
             string[] instructionParts = instruction.Split(' ');
 
-            try
-            {
-                Robot robot = boardGame.GetRobot();
+            Robot robot = boardGame.GetRobot();
 
-                if (Enum.TryParse(instructionParts[0], out RobotGameInstructions command) && robot != null)
+            if (Enum.TryParse(instructionParts[0].ToCamelCase(), out RobotGameInstructions command) && robot != null)
+            {
+                try
                 {
-                    try
+                    switch (command)
                     {
-                        switch (command)
-                        {
-                            case RobotGameInstructions.Place:
-                                {
-                                    Position position = new Position(GetCoordinate(instructionParts[1]), GetCoordinate(instructionParts[2]));
-                                    robot.PlacePieceOnGrid(position.X, position.Y);
-                                }; break;
-                            case RobotGameInstructions.Turn:
-                                {
-                                    robot.SetDirection(GetDirection(instructionParts[3]));
-                                }; break;
-                            case RobotGameInstructions.Move:
-                                {
-                                    Position position = GetNewRobotPosition(robot);
-                                    robot.SetPosition(position.X, position.Y);
-                                }; break;
-                            case RobotGameInstructions.Print:
-                                {
-                                    //TO ADD in hour 3
-                                }; break;
-                        }
+                        case RobotGameInstructions.Place:
+                            {
+                                Position position = new Position(GetCoordinate(instructionParts[1]), GetCoordinate(instructionParts[2]));
+                                robot.PlacePieceOnGrid(position.X, position.Y);
+                                robot.SetDirection(GetDirection(instructionParts[3].ToCamelCase()));
+                            }; break;
+                        case RobotGameInstructions.Turn:
+                            {
+                                robot.SetDirection(GetDirection(instructionParts[1].ToCamelCase()));
+                            }; break;
+                        case RobotGameInstructions.Move:
+                            {
+                                Position position = GetNewRobotPosition(robot);
+                                robot.SetPosition(position.X, position.Y);
+                            }; break;
+                        case RobotGameInstructions.Print:
+                            {
+                                Console.WriteLine($"{robot.GetPosition().X} {robot.GetPosition().Y} {robot.GetDirection().ToString().ToUpper()}");
+                            }; break;
+                        case RobotGameInstructions.Display:
+                            {
+                                boardGame.DisplayGame();
+                            }; break;
                     }
-                    catch (Exception ex)
-                    {
-                        //TO ADD in hour 3
-                        return false;
-                    }
+
+                    return true;
                 }
-                else
+                catch (Exception ex)
                 {
-                    //TO ADD IN hour 3
+                    Console.WriteLine($"Unexpected error in {nameof(OnProcessInstruction)}: {ex.Message}");
                     return false;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                //TO ADD in hour 3
+                Console.WriteLine(robot != null ? "Invalid user input!" : "There is no robot on the board!");
                 return false;
             }
-
-            return false;
         }
 
         public static bool CheckRobotIsPlaced(Robot robot)
@@ -126,38 +124,61 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
 
         public static bool CheckTurnCommandValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
         {
-            return robot.CheckPieceIsPlaced() && instructionParts.Count() > 1 && IsDirectionValid(instructionParts[1]);
+            if (instructionParts.Count() < 2 || !IsDirectionValid(instructionParts[1].ToCamelCase()))
+            {
+                Console.WriteLine("No valid direction was provided! Your choices are North, South, East and West");
+            }
+
+            return robot.CheckPieceIsPlaced() && instructionParts.Count() > 1 && IsDirectionValid(instructionParts[1].ToCamelCase());
         }
 
         public static bool CheckPlaceCommandValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
         {
-            return robot.CheckPieceIsPlaced() && instructionParts.Count() > 3 && IsDirectionValid(instructionParts[3])
+            if (robot.CheckPieceIsPlaced())
+            {
+                Console.WriteLine("The robot is already on the board!");
+            }
+
+            return !robot.CheckPieceIsPlaced() && instructionParts.Count() > 3 && IsDirectionValid(instructionParts[3].ToCamelCase())
                  && IsCoordinateValid(instructionParts[1]) && IsCoordinateValid(instructionParts[2])
                  && IsNewPositionValid(boardGame, new Position(GetCoordinate(instructionParts[1]), GetCoordinate(instructionParts[2])));
         }
 
         public static bool CheckPlaceMoveValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
         {
-            return robot.CheckPieceIsPlaced() && robot.GetDirection() != Direction.Unknown && boardGame.IsNewPositionValid(GetNewRobotPosition(robot));
+            var checkPlacementAndDirection = robot.CheckPieceIsPlaced() && robot.GetDirection() != Direction.Unknown;
+            if (!checkPlacementAndDirection)
+            {
+                Console.WriteLine("Cannot move the robot! It has not been placed yet!");
+                return false;
+            }
+
+            var newPositionCheck = boardGame.IsNewPositionValid(GetNewRobotPosition(robot));
+            if (!newPositionCheck)
+            {
+                Console.WriteLine("Stop! Going to fall!");
+            }
+
+            return newPositionCheck;
         }
 
         public static Position GetNewRobotPosition(Robot robot)
         {
             Position position = robot.GetPosition();
-            
+
             switch (robot.GetDirection())
             {
-                case Direction.North: return new Position(position.X + 1, position.Y);
-                case Direction.South: return new Position(position.X - 1, position.Y);
-                case Direction.East: return new Position(position.X, position.Y + 1);
-                case Direction.West: return new Position(position.X, position.Y - 1);
+                case Direction.East: return new Position(position.X + 1, position.Y);
+                case Direction.West: return new Position(position.X - 1, position.Y);
+                case Direction.North: return new Position(position.X, position.Y + 1);
+                case Direction.South: return new Position(position.X, position.Y - 1);
                 default: return new Position(position.X, position.Y);
             }
         }
 
-        public static bool CheckPlacePrintValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
+        public static bool CheckPrintValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
         {
-            return !robot.CheckPieceIsPlaced();
+            return robot.CheckPieceIsPlaced();
         }
     }
 }

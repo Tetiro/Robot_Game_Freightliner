@@ -17,12 +17,12 @@ namespace Robot_Game_Freightliner.Models.Games
             _board = new Board();
         }
 
-        public void StartGame()
+        public virtual void StartGame()
         {
             List<GameStatus> acceptableStatuses = new List<GameStatus>() { GameStatus.NotStarted, GameStatus.Stopped };
             _gameStatus = acceptableStatuses.Contains(_gameStatus) ? GameStatus.Started : _gameStatus;
         }
-        public void StopGame()
+        public virtual void StopGame()
         {
             List<GameStatus> acceptableStatuses = new List<GameStatus>() { GameStatus.Started };
             _gameStatus = acceptableStatuses.Contains(_gameStatus) ? GameStatus.Stopped : _gameStatus;
@@ -31,30 +31,34 @@ namespace Robot_Game_Freightliner.Models.Games
         {
             return _gameStatus;
         }
-        public void SetupBoard(int width, int height, IEnumerable<BoardPiece> boardPieces = null)
+        public virtual void SetupBoard(int width, int height, IEnumerable<BoardPiece> boardPieces = null)
         {
             SetupBoard(new Dimensions(width, height), boardPieces);
         }
-        public void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null)
+        public virtual void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null)
         {
-            _board.ClearGrid();
             _board.SetupGrid(dimensions, boardPieces);
         }
-        public void OnInstruction(string instruction)
+        public virtual void OnInstruction(string instruction)
         {
-            //TO ADD in hour 2
+
         }
-        public void ProcessInstruction(string instruction)
+        public virtual void ProcessInstruction(string instruction)
         {
-            //TO ADD in hour 2
+
         }
 
-        public Dimensions GetDimensions()
+        public virtual void DisplayGame()
+        {
+            _board.PrintGrid();
+        }
+
+        public virtual Dimensions GetDimensions()
         {
             return _board.GetDimensions();
         }
 
-        public IEnumerable<BoardPiece> GetPieces()
+        public virtual IEnumerable<BoardPiece> GetPieces()
         {
             return _board.GetPieces();
         }

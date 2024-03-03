@@ -11,23 +11,25 @@ namespace Robot_Game_Freightliner.Models.Games
 {
     public class RobotBoardGame : BoardGame
     {
-        public void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null)
+        public override void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null)
         {
             Robot robot = new Robot();
 
-            _board.ClearGrid();
             boardPieces = boardPieces ?? new List<BoardPiece>();
-            boardPieces.ToList().Add(robot);
-            _board.SetupGrid(dimensions, boardPieces);
+            List<BoardPiece> piecesList = boardPieces.ToList();
+            piecesList.Add(robot);
+
+            _board.ClearGrid();
+            _board.SetupGrid(dimensions, piecesList);
         }
-        public void OnInstruction(string instruction)
+        public override void OnInstruction(string instruction)
         {
             if (IsCommandValid(instruction))
             {
                 ProcessInstruction(instruction);
             }
         }
-        public new void ProcessInstruction(string instruction)
+        public override void ProcessInstruction(string instruction)
         {
             if (IsCommandValid(instruction))
             {
@@ -42,18 +44,11 @@ namespace Robot_Game_Freightliner.Models.Games
 
             try
             {
-                if (Enum.TryParse(instructionParts[0], out command))
-                {
-                    return this.IsCommandValid(instructionParts);
-                }
-                else
-                {
-                    //TO ADD IN hour 3
-                }
+                return this.IsCommandValid(instructionParts);
             }
             catch (Exception ex)
             {
-                //TO ADD IN hour 3
+                Console.WriteLine($"Unexpected error in {nameof(IsCommandValid)}: {ex.Message}");
             }
 
             return false;

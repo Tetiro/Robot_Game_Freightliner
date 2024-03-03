@@ -5,6 +5,7 @@
         Place,
         Turn,
         Move,
-        Print
+        Print,
+        Display
     }
 }
