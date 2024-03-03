@@ -1,9 +1,4 @@
-﻿using Robot_Game_Freightliner.Interfaces.Games;
-using Robot_Game_Freightliner.Interfaces.Grids;
-using Robot_Game_Freightliner.Interfaces.Pieces;
-using Robot_Game_Freightliner.Models.Game;
-using Robot_Game_Freightliner.Models.Games.RobotGame;
-using Robot_Game_Freightliner.Models.Grids;
+﻿using Robot_Game_Freightliner.Models.Games.RobotGame;
 using Robot_Game_Freightliner.Models.Pieces;
 using Robot_Game_Freightliner.Models.Utils;
 
@@ -26,13 +21,6 @@ namespace Robot_Game_Freightliner.Models.Games
         {
             if (IsCommandValid(instruction))
             {
-                ProcessInstruction(instruction);
-            }
-        }
-        public override void ProcessInstruction(string instruction)
-        {
-            if (IsCommandValid(instruction))
-            {
                 this.OnProcessInstruction(instruction);
             }
         }
@@ -40,7 +28,6 @@ namespace Robot_Game_Freightliner.Models.Games
         public bool IsCommandValid(string instruction)
         {
             string[] instructionParts = instruction.Split(' ');
-            RobotGameInstructions command;
 
             try
             {

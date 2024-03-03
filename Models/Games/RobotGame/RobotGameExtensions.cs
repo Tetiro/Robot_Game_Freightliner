@@ -1,4 +1,5 @@
-﻿using Robot_Game_Freightliner.Models.Utils;
+﻿using Robot_Game_Freightliner.Interfaces.Pieces;
+using Robot_Game_Freightliner.Models.Utils;
 using Robot_Game_Freightliner.Utilities;
 
 namespace Robot_Game_Freightliner.Models.Games.RobotGame
@@ -27,7 +28,7 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
                 }
                 else
                 {
-                    Console.WriteLine(robot != null ? "Invalid user input!" : "There is no robot on the board!");
+                    Console.WriteLine(robot != null ? "Invalid instruction" : "There is no robot on the board!");
                     return false;
                 }
             }
@@ -50,28 +51,13 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
                 {
                     switch (command)
                     {
-                        case RobotGameInstructions.Place:
-                            {
-                                Position position = new Position(GetCoordinate(instructionParts[1]), GetCoordinate(instructionParts[2]));
-                                robot.PlacePieceOnGrid(position.X, position.Y);
-                                robot.SetDirection(GetDirection(instructionParts[3].ToCamelCase()));
-                            }; break;
-                        case RobotGameInstructions.Turn:
-                            {
-                                robot.SetDirection(GetDirection(instructionParts[1].ToCamelCase()));
-                            }; break;
-                        case RobotGameInstructions.Move:
-                            {
-                                Position position = GetNewRobotPosition(robot);
-                                robot.SetPosition(position.X, position.Y);
-                            }; break;
-                        case RobotGameInstructions.Print:
-                            {
-                                Console.WriteLine($"{robot.GetPosition().X} {robot.GetPosition().Y} {robot.GetDirection().ToString().ToUpper()}");
-                            }; break;
                         case RobotGameInstructions.Display:
                             {
                                 boardGame.DisplayGame();
+                            }; break;
+                        default:
+                            {
+                                robot.OnInstruction(instruction);
                             }; break;
                     }
 
@@ -85,75 +71,53 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
             }
             else
             {
-                Console.WriteLine(robot != null ? "Invalid user input!" : "There is no robot on the board!");
+                Console.WriteLine(robot != null ? "Invalid instruction" : "There is no robot on the board!");
                 return false;
             }
         }
 
-        public static bool CheckRobotIsPlaced(Robot robot)
-        {
-            return robot.CheckPieceIsPlaced();
-        }
-        public static bool IsNewPositionValid(this BoardGame boardGame, Position position)
+        public static bool IsNewPositionValid(this RobotBoardGame boardGame, Position position)
         {
             Dimensions dimensions = boardGame.GetDimensions();
             return Enumerable.Range(0, dimensions.Width).Contains(position.X) && Enumerable.Range(0, dimensions.Height).Contains(position.Y);
         }
 
-        public static bool IsDirectionValid(string valueString)
+        public static bool CheckTurnCommandValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
         {
-            return Enum.TryParse(valueString, out Direction value);
-        }
-
-        public static bool IsCoordinateValid(string valueString)
-        {
-            return int.TryParse(valueString, out int value);
-        }
-
-        public static Direction GetDirection(string valueString)
-        {
-            Enum.TryParse(valueString, out Direction value);
-            return value;
-        }
-
-        public static int GetCoordinate(string valueString)
-        {
-            int.TryParse(valueString, out int value);
-            return value;
-        }
-
-        public static bool CheckTurnCommandValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
-        {
-            if (instructionParts.Count() < 2 || !IsDirectionValid(instructionParts[1].ToCamelCase()))
+            if (instructionParts.Count() < 2 || !instructionParts[1].ToCamelCase().IsDirectionValid())
             {
                 Console.WriteLine("No valid direction was provided! Your choices are North, South, East and West");
             }
 
-            return robot.CheckPieceIsPlaced() && instructionParts.Count() > 1 && IsDirectionValid(instructionParts[1].ToCamelCase());
+            return robot.CheckPieceIsPlaced() 
+                && instructionParts.Count() > 1 
+                && instructionParts[1].ToCamelCase().IsDirectionValid();
         }
 
-        public static bool CheckPlaceCommandValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
+        public static bool CheckPlaceCommandValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
         {
             if (robot.CheckPieceIsPlaced())
             {
                 Console.WriteLine("The robot is already on the board!");
             }
 
-            return !robot.CheckPieceIsPlaced() && instructionParts.Count() > 3 && IsDirectionValid(instructionParts[3].ToCamelCase())
-                 && IsCoordinateValid(instructionParts[1]) && IsCoordinateValid(instructionParts[2])
-                 && IsNewPositionValid(boardGame, new Position(GetCoordinate(instructionParts[1]), GetCoordinate(instructionParts[2])));
+            return !robot.CheckPieceIsPlaced() && instructionParts.Count() > 3 
+                 && instructionParts[3].ToCamelCase().IsDirectionValid()
+                 && instructionParts[1].IsCoordinateValid()
+                 && instructionParts[2].IsCoordinateValid()
+                 && IsNewPositionValid(boardGame, new Position(instructionParts[2].GetCoordinate(), instructionParts[1].GetCoordinate()));
         }
 
-        public static bool CheckPlaceMoveValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
+        public static bool CheckPlaceMoveValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
         {
             var checkPlacementAndDirection = robot.CheckPieceIsPlaced() && robot.GetDirection() != Direction.Unknown;
             if (!checkPlacementAndDirection)
             {
-                Console.WriteLine("Cannot move the robot! It has not been placed yet!");
+                Console.WriteLine("Error: First instruction must be PLACE");
                 return false;
             }
 
-            var newPositionCheck = boardGame.IsNewPositionValid(GetNewRobotPosition(robot));
+            var newPositionCheck = boardGame.IsNewPositionValid(robot.GetNewPosition());
             if (!newPositionCheck)
             {
                 Console.WriteLine("Stop! Going to fall!");
@@ -162,21 +126,7 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
             return newPositionCheck;
         }
 
-        public static Position GetNewRobotPosition(Robot robot)
-        {
-            Position position = robot.GetPosition();
-
-            switch (robot.GetDirection())
-            {
-                case Direction.East: return new Position(position.X + 1, position.Y);
-                case Direction.West: return new Position(position.X - 1, position.Y);
-                case Direction.North: return new Position(position.X, position.Y + 1);
-                case Direction.South: return new Position(position.X, position.Y - 1);
-                default: return new Position(position.X, position.Y);
-            }
-        }
-
-        public static bool CheckPrintValid(this BoardGame boardGame, Robot robot, string[] instructionParts)
+        public static bool CheckPrintValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
         {
             return robot.CheckPieceIsPlaced();
         }

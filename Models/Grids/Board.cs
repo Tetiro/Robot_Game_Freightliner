@@ -41,7 +41,7 @@ namespace Robot_Game_Freightliner.Models.Grids
                         Position position = p.GetPosition();
                         return position != null && c == position.X && r == position.Y;
                     });
-                    builder.Append($"{(piece != null ? piece.GetPieceCharacter() : ' ')}|");
+                    builder.Append($"{ (piece != null ? piece.GetPieceCharacter() : ' ') }|");
                 }
                 Console.WriteLine(builder.ToString());
                 Console.WriteLine(rowLine);

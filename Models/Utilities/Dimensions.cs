@@ -11,4 +11,18 @@
             Height = height;
         }
     }
+
+    public static class DimensionExtensions
+    {
+        public static bool IsDirectionValid(this string valueString)
+        {
+            return Enum.TryParse(valueString, out Direction value);
+        }
+
+        public static Direction GetDirection(this string valueString)
+        {
+            Enum.TryParse(valueString, out Direction value);
+            return value;
+        }
+    }
 }

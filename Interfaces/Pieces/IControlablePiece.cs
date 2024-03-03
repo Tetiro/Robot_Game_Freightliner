@@ -4,6 +4,6 @@ namespace Robot_Game_Freightliner.Interfaces.Pieces
 {
     public interface IControlablePiece
     {
-        void ProcessInstruction(string instruction);
+        void OnInstruction(string instruction);
     }
 }

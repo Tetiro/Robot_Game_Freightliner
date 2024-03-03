@@ -11,7 +11,7 @@ namespace Robot_Game_Freightliner
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to the console application. Type 'START' to start. Type 'STOP' to quit");
+            Console.WriteLine("Please enter instruction:");
 
             IGame game = new RobotBoardGame();
             game.SetupBoard(new Dimensions(3, 3));
@@ -22,7 +22,7 @@ namespace Robot_Game_Freightliner
                 string userInput = Console.ReadLine().ToUpper();
 
                 // Check if the user wants to quit
-                if (userInput.ToUpper() == "QUIT")
+                if (userInput.ToUpper() == "STOP")
                 {
                     break;
                 }
