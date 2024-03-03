@@ -1,5 +1,6 @@
 ﻿using Robot_Game_Freightliner.Interfaces.Games;
 using Robot_Game_Freightliner.Interfaces.Grids;
+using Robot_Game_Freightliner.Interfaces.Pieces;
 using Robot_Game_Freightliner.Models.Game;
 using Robot_Game_Freightliner.Models.Games.RobotGame;
 using Robot_Game_Freightliner.Models.Grids;
@@ -12,7 +13,7 @@ namespace Robot_Game_Freightliner.Models.Games
     {
         public void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null)
         {
-            var robot = new Robot();
+            Robot robot = new Robot();
 
             _board.ClearGrid();
             boardPieces = boardPieces ?? new List<BoardPiece>();
@@ -21,11 +22,47 @@ namespace Robot_Game_Freightliner.Models.Games
         }
         public void OnInstruction(string instruction)
         {
-            //TO ADD in hour 2
+            if (IsCommandValid(instruction))
+            {
+                ProcessInstruction(instruction);
+            }
         }
-        public void ProcessInstruction(string instruction)
+        public new void ProcessInstruction(string instruction)
         {
-            //TO ADD in hour 2
+            if (IsCommandValid(instruction))
+            {
+                this.OnProcessInstruction(instruction);
+            }
+        }
+
+        public bool IsCommandValid(string instruction)
+        {
+            string[] instructionParts = instruction.Split(' ');
+            RobotGameInstructions command;
+
+            try
+            {
+                if (Enum.TryParse(instructionParts[0], out command))
+                {
+                    return this.IsCommandValid(instructionParts);
+                }
+                else
+                {
+                    //TO ADD IN hour 3
+                }
+            }
+            catch (Exception ex)
+            {
+                //TO ADD IN hour 3
+            }
+
+            return false;
+        }
+
+        public Robot GetRobot()
+        {
+            BoardPiece robot = _board.GetPieces().FirstOrDefault(x => x.GetType() == typeof(Robot));
+            return robot != null ? (Robot)robot : null;
         }
     }
 }

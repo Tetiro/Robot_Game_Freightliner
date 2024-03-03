@@ -10,5 +10,6 @@ namespace Robot_Game_Freightliner.Interfaces.Grids
         void SetupGrid(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null);
         void ClearGrid();
         Dimensions GetDimensions();
+        IEnumerable<BoardPiece> GetPieces();
     }
 }

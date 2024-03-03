@@ -13,5 +13,7 @@ namespace Robot_Game_Freightliner.Interfaces.Games
         void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null);
         void OnInstruction(string instruction);
         void ProcessInstruction(string instruction);
+        Dimensions GetDimensions();
+        IEnumerable<BoardPiece> GetPieces();
     }
 }

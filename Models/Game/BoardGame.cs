@@ -19,12 +19,12 @@ namespace Robot_Game_Freightliner.Models.Games
 
         public void StartGame()
         {
-            var acceptableStatuses = new List<GameStatus>() { GameStatus.NotStarted, GameStatus.Stopped };
+            List<GameStatus> acceptableStatuses = new List<GameStatus>() { GameStatus.NotStarted, GameStatus.Stopped };
             _gameStatus = acceptableStatuses.Contains(_gameStatus) ? GameStatus.Started : _gameStatus;
         }
         public void StopGame()
         {
-            var acceptableStatuses = new List<GameStatus>() { GameStatus.Started };
+            List<GameStatus> acceptableStatuses = new List<GameStatus>() { GameStatus.Started };
             _gameStatus = acceptableStatuses.Contains(_gameStatus) ? GameStatus.Stopped : _gameStatus;
         }
         public GameStatus GetStatus()
@@ -47,6 +47,16 @@ namespace Robot_Game_Freightliner.Models.Games
         public void ProcessInstruction(string instruction)
         {
             //TO ADD in hour 2
+        }
+
+        public Dimensions GetDimensions()
+        {
+            return _board.GetDimensions();
+        }
+
+        public IEnumerable<BoardPiece> GetPieces()
+        {
+            return _board.GetPieces();
         }
     }
 }

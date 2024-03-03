@@ -12,5 +12,15 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
         {
             //TO ADD IN HOUR 2
         }
+
+        public Direction GetDirection()
+        {
+            return _direction;
+        }
+
+        public void SetDirection(Direction direction)
+        {
+            _direction = direction;
+        }
     }
 }

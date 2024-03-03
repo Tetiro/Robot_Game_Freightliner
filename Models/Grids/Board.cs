@@ -34,5 +34,10 @@ namespace Robot_Game_Freightliner.Models.Grids
         {
             return _dimensions;
         }
+
+        public IEnumerable<BoardPiece> GetPieces()
+        {
+            return _piecesOnBoard();
+        }
     }
 }
