@@ -20,9 +20,9 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
             Dictionary<RobotGameInstructions, Func<RobotBoardGame, Robot, string[], bool>> validationFunctions
                = new Dictionary<RobotGameInstructions, Func<RobotBoardGame, Robot, string[], bool>>()
                {
-                   [RobotGameInstructions.Print] = CheckPrintValid,
+                   [RobotGameInstructions.Print] = CheckPrintCommandValid,
                    [RobotGameInstructions.Turn] = CheckTurnCommandValid,
-                   [RobotGameInstructions.Move] = CheckPlaceMoveValid,
+                   [RobotGameInstructions.Move] = CheckMoveCommandValid,
                    [RobotGameInstructions.Place] = CheckPlaceCommandValid
                };
 
@@ -121,6 +121,28 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
                 Console.WriteLine("The robot is already on the board!");
             }
 
+            if (instructionParts.Count() < 4)
+            {
+                Console.WriteLine("Input error: Not enough values were provided. This command requires 3 values (X, Y and Direction)");
+            }
+            else
+            {
+                if (!instructionParts[1].IsCoordinateValid())
+                {
+                    Console.WriteLine("Input error: The 2nd value must be a valid number");
+                }
+
+                if (!instructionParts[2].IsCoordinateValid())
+                {
+                    Console.WriteLine("Input error: The 3rd value must be a valid number");
+                }
+
+                if (!instructionParts[3].ToTitleCase().IsDirectionValid())
+                {
+                    Console.WriteLine("Input error: The 4th value must be a valid Direction. Your choices are North, South, East and West");
+                }
+            }
+
             return !robot.CheckPieceIsPlaced() && instructionParts.Count() > 3 
                  && instructionParts[3].ToTitleCase().IsDirectionValid()
                  && instructionParts[1].IsCoordinateValid()
@@ -134,7 +156,7 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
         /// 2 - The piece must not be placed on the grid
         /// 3 - The proposed new co-ordinates must be a valid position on the Board
         /// </summary>
-        public static bool CheckPlaceMoveValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
+        public static bool CheckMoveCommandValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
         {
             var checkPlacementAndDirection = robot.CheckPieceIsPlaced() && robot.GetDirection() != Direction.Unknown;
             if (!checkPlacementAndDirection)
@@ -159,7 +181,7 @@ namespace Robot_Game_Freightliner.Models.Games.RobotGame
         /// This method validates the Place command based on the following conditions
         /// 1 - The piece must not be placed on the grid
         /// </summary>
-        public static bool CheckPrintValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
+        public static bool CheckPrintCommandValid(this RobotBoardGame boardGame, Robot robot, string[] instructionParts)
         {
             return robot.CheckPieceIsPlaced();
         }
