@@ -6,6 +6,17 @@ namespace Robot_Game_Freightliner.Models.Games
 {
     public class RobotBoardGame : BoardGame
     {
+        /// <summary>
+        /// This method overrides the BoardGame's SetupBoard to create the Robot and add it to the board pieces
+        /// </summary>
+        public override void SetupBoard(int width, int height, IEnumerable<BoardPiece> boardPieces = null)
+        {
+            SetupBoard(new Dimensions(width, height));
+        }
+
+        /// <summary>
+        /// This method overrides the BoardGame's SetupBoard to create the Robot and add it to the board pieces
+        /// </summary>
         public override void SetupBoard(Dimensions dimensions, IEnumerable<BoardPiece> boardPieces = null)
         {
             Robot robot = new Robot();
@@ -14,33 +25,23 @@ namespace Robot_Game_Freightliner.Models.Games
             List<BoardPiece> piecesList = boardPieces.ToList();
             piecesList.Add(robot);
 
-            _board.ClearGrid();
-            _board.SetupGrid(dimensions, piecesList);
+            base.SetupBoard(dimensions, piecesList);
         }
+
+        /// <summary>
+        /// This method validates and processes a command based on the Robot BoardGame
+        /// </summary>
         public override void OnInstruction(string instruction)
         {
-            if (IsCommandValid(instruction))
+            if (this.IsCommandValid(instruction))
             {
                 this.OnProcessInstruction(instruction);
             }
         }
 
-        public bool IsCommandValid(string instruction)
-        {
-            string[] instructionParts = instruction.Split(' ');
-
-            try
-            {
-                return this.IsCommandValid(instructionParts);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected error in {nameof(IsCommandValid)}: {ex.Message}");
-            }
-
-            return false;
-        }
-
+        /// <summary>
+        /// This method retrieves the first instance of a Robot class
+        /// </summary>
         public Robot GetRobot()
         {
             BoardPiece robot = _board.GetPieces().FirstOrDefault(x => x.GetType() == typeof(Robot));

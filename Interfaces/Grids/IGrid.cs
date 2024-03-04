@@ -4,6 +4,9 @@ using Robot_Game_Freightliner.Models.Utils;
 
 namespace Robot_Game_Freightliner.Interfaces.Grids
 {
+    /// <summary>
+    /// This interface determines the required methods for IGrid based classes
+    /// </summary>
     public interface IGrid
     {
         void SetupGrid(int width, int height, IEnumerable<BoardPiece> boardPieces = null);

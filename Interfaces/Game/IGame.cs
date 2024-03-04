@@ -3,6 +3,9 @@ using Robot_Game_Freightliner.Models.Utils;
 
 namespace Robot_Game_Freightliner.Interfaces.Games
 {
+    /// <summary>
+    /// This interface determines the required methods for IGame based classes
+    /// </summary>
     public interface IGame
     {
         void SetupBoard(int width, int height, IEnumerable<BoardPiece> boardPieces = null);

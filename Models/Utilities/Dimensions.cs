@@ -1,5 +1,8 @@
 ﻿namespace Robot_Game_Freightliner.Models.Utils
 {
+    /// <summary>
+    /// This class contains the properties for Dimensions
+    /// </summary>
     public class Dimensions
     {
         public int Width { get; set; }
@@ -9,20 +12,6 @@
         {
             Width = width;
             Height = height;
-        }
-    }
-
-    public static class DimensionExtensions
-    {
-        public static bool IsDirectionValid(this string valueString)
-        {
-            return Enum.TryParse(valueString, out Direction value);
-        }
-
-        public static Direction GetDirection(this string valueString)
-        {
-            Enum.TryParse(valueString, out Direction value);
-            return value;
         }
     }
 }
